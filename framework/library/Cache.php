@@ -41,13 +41,13 @@ abstract class Cache {
 	 */
 	const EXPIRE = 'expires';
 
-	public static function &get_instance($name = 'default') {
+	public static function &getInstance($name = 'default') {
 		static $instances = array ();
 		if (! isset ( $instances [$name] ) || ! is_object ( $instances [$name] )) {
 			$options = C ( 'cache', $name );
 			$class = 'Cache_Driver_' . $options ['driver'];
 			$instances [$name] = new $class ( $options );
-			$instances [$name]->set_config ( $options );
+			$instances [$name]->setConfig ( $options );
 		}
 		return $instances [$name];
 	}
@@ -61,7 +61,7 @@ abstract class Cache {
 	 * @return boolean
 	 * @throws leaps_exception 缓存失败的时候抛出异常
 	 */
-	protected abstract function set_value($key, $value, $expires = 0);
+	protected abstract function setValue($key, $value, $expires = 0);
 
 	/**
 	 * 执行获取操作
@@ -70,7 +70,7 @@ abstract class Cache {
 	 * @return string 缓存的数据
 	 * @throws leaps_exception 缓存数据获取失败抛出异常
 	 */
-	protected abstract function get_value($key);
+	protected abstract function getValue($key);
 
 	/**
 	 * 需要实现的删除操作
@@ -78,7 +78,7 @@ abstract class Cache {
 	 * @param string $key 需要删除的缓存数据的key
 	 * @return boolean
 	 */
-	protected abstract function delete_value($key);
+	protected abstract function deleteValue($key);
 
 	/**
 	 * 清楚缓存，过期及所有缓存
@@ -99,9 +99,9 @@ abstract class Cache {
 	 */
 	public function set($key, $value, $expires = 0) {
 		try {
-			$data = $this->build_data ( $value, $expires );
+			$data = $this->buildData ( $value, $expires );
 			N ( 'cache_write', 1 );
-			return $this->set_value ( $key, serialize ( $data ), $data [self::EXPIRE] );
+			return $this->setValue ( $key, serialize ( $data ), $data [self::EXPIRE] );
 		} catch ( Exception $e ) {
 			throw new Exception ( 'Setting cache failed.' . $e->getMessage () );
 		}
@@ -118,7 +118,7 @@ abstract class Cache {
 	public function get($key) {
 		try {
 			N ( 'cache_read', 1 );
-			return $this->format_data ( $key, $this->get_value ( $key ) );
+			return $this->formatData ( $key, $this->getValue ( $key ) );
 		} catch ( Exception $e ) {
 			throw new Exception ( 'Getting cache data failed. (' . $e->getMessage () . ')' );
 		}
@@ -132,7 +132,7 @@ abstract class Cache {
 	 */
 	public function info($key) {
 		try {
-			return unserialize ( $this->get_value ( $key ) );
+			return unserialize ( $this->getValue ( $key ) );
 		} catch ( Exception $e ) {
 			throw new Exception ( 'Getting cache info failed. (' . $e->getMessage () . ')' );
 		}
@@ -148,7 +148,7 @@ abstract class Cache {
 	 */
 	public function delete($key) {
 		try {
-			return $this->delete_value ( $key );
+			return $this->deleteValue ( $key );
 		} catch ( Exception $e ) {
 			throw new Exception ( 'Delete cache data failed. (' . $e->getMessage () . ')' );
 		}
@@ -161,9 +161,9 @@ abstract class Cache {
 	 * @param string $type 缓存类型
 	 * @param int $expires 缓存数据的过期时间,0表示永不过期
 	 */
-	protected function build_data($value, $expires = 0) {
+	protected function buildData($value, $expires = 0) {
 		if (! is_array ( $value ) && empty ( $value )) $value = array ();
-		$data = array (self::DATA => $value,self::EXPIRE => $expires ? $expires : $this->get_expire (),self::STORETIME => TIME );
+		$data = array (self::DATA => $value,self::EXPIRE => $expires ? $expires : $this->getExpire (),self::STORETIME => TIME );
 		return $data;
 	}
 
@@ -178,10 +178,10 @@ abstract class Cache {
 	 * @param string $value 缓存的数据的序列化值
 	 * @return mixed 返回保存的真实数据,如果没有数值则返回false
 	 */
-	protected function format_data($key, $value) {
+	protected function formatData($key, $value) {
 		if (! $value) return false;
 		$data = unserialize ( $value );
-		return $this->has_changed ( $key, $data ) ? false : $data [self::DATA];
+		return $this->hasChanged ( $key, $data ) ? false : $data [self::DATA];
 	}
 
 	/**
@@ -194,7 +194,7 @@ abstract class Cache {
 	 * @param array $data 缓存中的数据
 	 * @return boolean true表示缓存已变更,false表示缓存未变改
 	 */
-	protected function has_changed($key, array $data) {
+	protected function hasChanged($key, array $data) {
 		if ($data [self::EXPIRE]) {
 			$_over_time = $data [self::EXPIRE] + $data [self::STORETIME];
 			if ($_over_time >= TIME) return false;
@@ -209,8 +209,8 @@ abstract class Cache {
 	 *
 	 * @param array $config 缓存配置信息
 	 */
-	protected function set_config($options = array()) {
-		$this->set_expire ( $options ['expire'] );
+	protected function setConfig($options = array()) {
+		$this->setExpire ( $options ['expire'] );
 	}
 
 	/**
@@ -220,7 +220,7 @@ abstract class Cache {
 	 *
 	 * @param int $expire 缓存过期时间,单位为秒,默认为0永不过期
 	 */
-	public function set_expire($expire) {
+	public function setExpire($expire) {
 		$this->expire = intval ( $expire );
 	}
 
@@ -231,7 +231,7 @@ abstract class Cache {
 	 *
 	 * @return int $expire 缓存过期时间，默认为0永不过期，单位为秒
 	 */
-	public function get_expire() {
+	public function getExpire() {
 		return $this->expire;
 	}
 }

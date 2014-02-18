@@ -28,7 +28,7 @@ class Factory {
 		if (! isset ( self::$instances ['cache'] [$i_name] ) || ! is_object ( self::$instances ['cache'] [$i_name] )) {
 			$class = 'Cache_Driver_' . $options ['driver'];
 			self::$instances ['cache'] [$i_name] = new $class ( $options );
-			self::$instances ['cache'] [$i_name]->set_config ( $options );
+			self::$instances ['cache'] [$i_name]->setConfig ( $options );
 		}
 		return self::$instances ['cache'] [$i_name];
 	}

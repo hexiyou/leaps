@@ -43,7 +43,7 @@ class Cache_Driver_File extends Cache {
 	 * (non-PHPdoc)
 	 * @see Cache::set_value()
 	 */
-	protected function set_value($key, $value, $expires = 0) {
+	protected function setValue($key, $value, $expires = 0) {
 		$file = $this->_path ( $key );
 		return File::write ( $file, $value ) == strlen ( $value );
 	}
@@ -52,7 +52,7 @@ class Cache_Driver_File extends Cache {
 	 * (non-PHPdoc)
 	 * @see Cache::get_value()
 	 */
-	protected function get_value($key) {
+	protected function getValue($key) {
 		$file = $this->_path ( $key );
 		return File::read ( $file );
 	}
@@ -61,7 +61,7 @@ class Cache_Driver_File extends Cache {
 	 * (non-PHPdoc)
 	 * @see Cache::delete_value()
 	 */
-	protected function delete_value($key) {
+	protected function deleteValue($key) {
 		$file = $this->_path ( $key );
 		return File::del ( $file );
 	}
@@ -95,9 +95,9 @@ class Cache_Driver_File extends Cache {
 	 * (non-PHPdoc)
 	 * @see Cache::set_config()
 	 */
-	public function set_config($options = array()) {
+	public function setConfig($options = array()) {
 		if (! is_array ( $options )) return false;
-		parent::set_config ( $options );
+		parent::setConfig ( $options );
 		$this->suffix = $options ['suffix'];
 	}
 }

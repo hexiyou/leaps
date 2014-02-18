@@ -27,7 +27,7 @@ class Cache_Driver_Apc extends Cache {
 	 *
 	 * @see Cache::set_value()
 	 */
-	protected function set_value($key, $value, $expires = 0) {
+	protected function setValue($key, $value, $expires = 0) {
 		return apc_store ( $key, $value, $expires );
 	}
 
@@ -36,7 +36,7 @@ class Cache_Driver_Apc extends Cache {
 	 *
 	 * @see Cache::get_value()
 	 */
-	protected function get_value($key) {
+	protected function getValue($key) {
 		return apc_fetch ( $key );
 	}
 
@@ -45,7 +45,7 @@ class Cache_Driver_Apc extends Cache {
 	 *
 	 * @see Cache::delete_value()
 	 */
-	protected function delete_value($key) {
+	protected function deleteValue($key) {
 		return apc_delete ( $key );
 	}
 

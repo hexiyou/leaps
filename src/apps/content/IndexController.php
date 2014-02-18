@@ -8,7 +8,6 @@
 class IndexController extends Web_Controller {
 	public function __construct() {
 		parent::__construct ();
-		$this->db = Loader::model('admin_model');
 	}
 
 	/**
